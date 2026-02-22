@@ -1,18 +1,44 @@
 {
     "name": "@ai-ledger/cli",
     "version": "0.1.0",
-    "description": "AI Ledger reference CLI",
+    "description": "Reference CLI for AI Ledger. Initializes .ai-ledger structure, generates contracts and entries, and runs basic compliance checks.",
+    "author": "Joonas Tanner (Lucky Dreamer LLC)",
     "license": "MIT",
+    "type": "commonjs",
+    "main": "dist/index.js",
     "bin": {
       "ai-ledger": "dist/index.js"
     },
+    "preferGlobal": true,
+    "engines": {
+      "node": ">=20"
+    },
     "repository": {
       "type": "git",
-      "url": "git+https://github.com/ai-ledger/ai-ledger.git",
+      "url": "https://github.com/ai-ledger/ai-ledger.git",
       "directory": "packages/cli"
     },
-    "files": ["dist", "README.md"],
-    "publishConfig": { "access": "public" },
+    "homepage": "https://github.com/ai-ledger/ai-ledger#readme",
+    "bugs": {
+      "url": "https://github.com/ai-ledger/ai-ledger/issues"
+    },
+    "keywords": [
+      "ai",
+      "cli",
+      "governance",
+      "traceability",
+      "audit",
+      "agentic-ai",
+      "developer-tools"
+    ],
+    "files": [
+      "dist",
+      "README.md",
+      "LICENSE"
+    ],
+    "publishConfig": {
+      "access": "public"
+    },
     "scripts": {
       "build": "tsup src/index.ts --format cjs --platform node --target node20 --out-dir dist",
       "prepublishOnly": "pnpm build"
@@ -23,6 +49,6 @@
     "devDependencies": {
       "@types/node": "^22.10.0",
       "tsup": "^8.2.0",
-      "typescript": "^5.5.4"
+      "typescript": "^5.9.3"
     }
   }

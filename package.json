@@ -1,15 +1,31 @@
 {
 	"name": "ai-ledger",
+	"private": true,
 	"version": "0.1.0",
-	"description": "AI Ledger",
+	"description": "AI Ledger is a Git-native, append-only governance standard for AI-assisted software development. It provides intent contracts, scope boundaries, and immutable change records for agentic and human workflows.",
+	"author": "Joonas Tanner (Lucky Dreamer LLC)",
 	"license": "MIT",
 	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/ai-ledger/ai-ledger.git"
+	  "type": "git",
+	  "url": "https://github.com/ai-ledger/ai-ledger.git"
 	},
+	"homepage": "https://github.com/ai-ledger/ai-ledger#readme",
+	"bugs": {
+	  "url": "https://github.com/ai-ledger/ai-ledger/issues"
+	},
+	"keywords": [
+	  "ai",
+	  "governance",
+	  "agentic-ai",
+	  "ai-development",
+	  "developer-tools",
+	  "monorepo",
+	  "traceability",
+	  "audit",
+	  "devtools"
+	],
 	"packageManager": "pnpm@10.30.0",
 	"devDependencies": {
-		"@changesets/cli": "^2.29.8",
-		"typescript": "^5.9.3"
+	  "typescript": "^5.9.3"
 	}
-}
+  }

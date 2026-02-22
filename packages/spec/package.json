@@ -1,18 +1,33 @@
 {
     "name": "@ai-ledger/spec",
     "version": "0.1.0",
-    "description": "AI Ledger specification",
+    "description": "AI Ledger specification. Defines the append-only governance model for AI-assisted software development.",
+    "author": "Joonas Tanner (Lucky Dreamer LLC)",
     "license": "MIT",
     "repository": {
-        "type": "git",
-        "url": "git+https://github.com/ai-ledger/ai-ledger.git",
-        "directory": "packages/spec"
+      "type": "git",
+      "url": "https://github.com/ai-ledger/ai-ledger.git",
+      "directory": "packages/spec"
     },
+    "homepage": "https://github.com/ai-ledger/ai-ledger#readme",
+    "bugs": {
+      "url": "https://github.com/ai-ledger/ai-ledger/issues"
+    },
+    "keywords": [
+      "ai",
+      "governance",
+      "specification",
+      "agentic-ai",
+      "audit",
+      "traceability",
+      "developer-tools"
+    ],
     "files": [
-        "README.md",
-        "spec"
+      "README.md",
+      "spec",
+      "LICENSE"
     ],
     "publishConfig": {
-        "access": "public"
+      "access": "public"
     }
-}
+  }
