@@ -15,13 +15,7 @@ Please read this document before opening a pull request.
 - `.ai-ledger/` — reference folder structure and templates
 - `examples/` — example contracts, entries, and tool integrations
 - `.github/workflows/` — basic enforcement workflows
-
-Future reference implementations (e.g., Node CLI) may live under:
-
-```
-packages/
-  cli/
-```
+- `packages/cli/` — reference CLI (`@ai-ledger/cli`)
 
 ---
 
@@ -93,7 +87,7 @@ Breaking changes require:
 
 ## Tooling Contributions
 
-Future reference implementations (e.g., `@ai-ledger/cli`) should:
+Reference implementations (e.g., `@ai-ledger/cli`) should:
 
 - Follow the spec exactly
 - Not introduce behavior that contradicts the spec

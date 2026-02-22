@@ -1,8 +1,13 @@
 # @ai-ledger/cli
 
-Reference CLI for AI Ledger.
+Reference CLI for AI Ledger. Run with `npx` (no install):
 
-Commands:
-- ai-ledger init
-- ai-ledger new --title "..."
-- ai-ledger check
+```bash
+npx @ai-ledger/cli init
+npx @ai-ledger/cli new --title "..."
+npx @ai-ledger/cli check
+```
+
+- `init` — scaffold `.ai-ledger/` (templates, config)
+- `new --title "..."` — generate a new contract and entry
+- `check` — validate append-only and presence of contracts/entries (e.g. in CI)

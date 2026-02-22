@@ -97,6 +97,9 @@ scope:
   templates/
   config.json
 spec/
+packages/
+  cli/          # @ai-ledger/cli
+  spec/         # @ai-ledger/spec
 examples/
 .github/workflows/
 AGENTS.md
@@ -258,16 +261,19 @@ Tooling may evolve independently.
 
 ---
 
-## Reference CLI (coming soon)
+## Reference CLI
 
-A Node.js reference implementation is planned:
+The `@ai-ledger/cli` package provides a Node.js reference implementation. Run with `npx` (no install):
 
-- `@ai-ledger/cli`
+```bash
+npx @ai-ledger/cli init
+npx @ai-ledger/cli new --title "..."
+npx @ai-ledger/cli check
+```
 
-It will:
-- scaffold `.ai-ledger/`
-- generate contracts and entries
-- validate append-only and scope rules locally and in CI
+- `init` — scaffold `.ai-ledger/` (templates, config)
+- `new --title "..."` — generate a new contract and entry
+- `check` — validate append-only and presence of contracts/entries (e.g. in CI)
 
 ---
 
