@@ -1,0 +1,38 @@
+name: AI Ledger (basic)
+
+on:
+  pull_request:
+
+jobs:
+  basic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enforce append-only and presence of entries
+        run: |
+          set -e
+          git fetch origin "${{ github.base_ref }}" --depth=1 || true
+
+          BASE="origin/${{ github.base_ref }}"
+          if ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
+            BASE="HEAD~1"
+          fi
+
+          NEW_CONTRACTS=$(git diff --name-status "$BASE"...HEAD -- .ai-ledger/contracts | awk '$1=="A"{print $2}' | wc -l | tr -d ' ')
+          NEW_ENTRIES=$(git diff --name-status "$BASE"...HEAD -- .ai-ledger/entries | awk '$1=="A"{print $2}' | wc -l | tr -d ' ')
+          if [ "$NEW_CONTRACTS" -lt 1 ] || [ "$NEW_ENTRIES" -lt 1 ]; then
+            echo "AI Ledger: missing new contract and/or entry. Add at least one new file to .ai-ledger/contracts and .ai-ledger/entries."
+            exit 1
+          fi
+
+          BAD=$(git diff --name-status "$BASE"...HEAD -- .ai-ledger/contracts .ai-ledger/entries | awk '$1!="A"{print}' | wc -l | tr -d ' ')
+          if [ "$BAD" -gt 0 ]; then
+            echo "AI Ledger: append-only violation. Do not modify/delete existing files in .ai-ledger/contracts or .ai-ledger/entries."
+            git diff --name-status "$BASE"...HEAD -- .ai-ledger/contracts .ai-ledger/entries
+            exit 1
+          fi
+
+          echo "AI Ledger basic checks passed."

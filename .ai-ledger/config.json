@@ -1,0 +1,14 @@
+{
+    "version": "0.1",
+    "defaultRiskLevel": "low",
+    "requireHumanApproval": true,
+    "metaPathsAllowed": [
+      ".ai-ledger/**",
+      ".github/**",
+      "spec/**",
+      "examples/**",
+      "README.md",
+      "AGENTS.md",
+      "LICENSE"
+    ]
+  }

@@ -1,0 +1,17 @@
+{
+    "name": "@ai-ledger/cli",
+    "version": "0.0.0",
+    "description": "AI Ledger reference CLI (coming soon)",
+    "license": "MIT",
+    "bin": {
+      "ai-ledger": "dist/index.js"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/ai-ledger/ai-ledger.git",
+      "directory": "packages/cli"
+    },
+    "publishConfig": {
+      "access": "public"
+    }
+}

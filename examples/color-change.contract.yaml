@@ -1,0 +1,30 @@
+id: "AILE-EXAMPLE-0001"
+title: "Align brand accent color with new marketing palette"
+date: "2026-02-22"
+author: "example"
+
+intent:
+  summary: "Update accent colors to match the new palette."
+  reason: "Rebrand update Q1 2026."
+  risk_level: "medium"
+
+scope:
+  expected:
+    - "tokens/colors.ts"
+    - "theme/**"
+  forbidden:
+    - "auth/**"
+    - "infra/**"
+
+verification:
+  expected_tests:
+    - "pnpm test"
+    - "pnpm lint"
+  manual_checks:
+    - "Verify buttons and links in the app"
+
+review:
+  requires_human_approval: true
+
+links:
+  entry: "examples/color-change.entry.md"

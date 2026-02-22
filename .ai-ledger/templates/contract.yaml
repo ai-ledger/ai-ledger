@@ -1,0 +1,32 @@
+id: "AILE-0001"
+title: "Short descriptive title"
+date: "YYYY-MM-DD"
+author: "your name or handle"
+
+intent:
+  summary: "One sentence: what is supposed to change."
+  reason: "Why this change is happening."
+  risk_level: "low" # low | medium | high
+
+scope:
+  expected:
+    - "src/**"
+  forbidden:
+    - "infra/**"
+    - "auth/**"
+    - "supabase/migrations/**"
+
+verification:
+  expected_tests:
+    - "pnpm test"
+    - "pnpm lint"
+  manual_checks:
+    - "Describe any manual checks expected"
+
+review:
+  requires_human_approval: true
+
+links:
+  entry: ".ai-ledger/entries/YYYY-MM-DD-slug.md"
+  pr: ""    # optional
+  issue: "" # optional

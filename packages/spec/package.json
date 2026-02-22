@@ -1,0 +1,18 @@
+{
+    "name": "@ai-ledger/spec",
+    "version": "0.1.0",
+    "description": "AI Ledger specification",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ai-ledger/ai-ledger.git",
+        "directory": "packages/spec"
+    },
+    "files": [
+        "README.md",
+        "spec"
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
+}
