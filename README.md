@@ -1,6 +1,10 @@
+<p align="center">
+  <img src="ai-ledger-logo.png" alt="AI Ledger Logo" width="220" />
+</p>
+
 # AI Ledger
 
-AI Ledger is a Git-native, append-only governance standard for AI-assisted software development.
+Git-native, append-only governance for AI-assisted software development.
 
 It makes AI-generated changes traceable and reviewable using:
 
