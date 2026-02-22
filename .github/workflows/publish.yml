@@ -1,16 +1,15 @@
-name: Release
+name: Publish packages
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
-  release:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,12 +25,14 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Create Release Pull Request or Publish
-        uses: changesets/action@v1
-        with:
-          commit: "chore: release"
-          title: "chore: release"
-          publish: pnpm -r publish --access public
+      - name: Publish spec
+        working-directory: packages/spec
+        run: npm publish --access public
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish cli
+        working-directory: packages/cli
+        run: npm publish --access public
+        env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

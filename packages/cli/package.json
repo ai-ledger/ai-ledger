@@ -1,7 +1,7 @@
 {
     "name": "@ai-ledger/cli",
-    "version": "0.0.0",
-    "description": "AI Ledger reference CLI (coming soon)",
+    "version": "0.1.0",
+    "description": "AI Ledger reference CLI",
     "license": "MIT",
     "bin": {
       "ai-ledger": "dist/index.js"
@@ -11,7 +11,18 @@
       "url": "git+https://github.com/ai-ledger/ai-ledger.git",
       "directory": "packages/cli"
     },
-    "publishConfig": {
-      "access": "public"
+    "files": ["dist", "README.md"],
+    "publishConfig": { "access": "public" },
+    "scripts": {
+      "build": "tsup src/index.ts --format cjs --platform node --target node20 --out-dir dist",
+      "prepublishOnly": "pnpm build"
+    },
+    "dependencies": {
+      "commander": "^12.1.0"
+    },
+    "devDependencies": {
+      "@types/node": "^22.10.0",
+      "tsup": "^8.2.0",
+      "typescript": "^5.5.4"
     }
-}
+  }
