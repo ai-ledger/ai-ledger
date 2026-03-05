@@ -275,9 +275,11 @@ npx @ai-ledger/cli new --title "..."
 npx @ai-ledger/cli check
 ```
 
-- `init` — scaffold `.ai-ledger/` (templates, config)
+- `init` — scaffold `.ai-ledger/` templates/config and select storage mode
 - `new --title "..."` — generate a new contract and entry
 - `check` — validate append-only and presence of contracts/entries (e.g. in CI)
+
+By default in git repositories, ledger records are stored on a dedicated branch (`ai-ledger/log`) through an internal git worktree (`.git/.ai-ledger/worktree`). This keeps `.ai-ledger/contracts` and `.ai-ledger/entries` off your active branch while preserving append-only history for AI Ledger itself. Outside git repositories, storage falls back to workspace mode.
 
 ---
 

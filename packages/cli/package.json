@@ -1,6 +1,6 @@
 {
     "name": "@ai-ledger/cli",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Reference CLI for AI Ledger. Initializes .ai-ledger structure, generates contracts and entries, and runs basic compliance checks.",
     "author": "Joonas Tanner (Lucky Dreamer LLC)",
     "license": "MIT",
