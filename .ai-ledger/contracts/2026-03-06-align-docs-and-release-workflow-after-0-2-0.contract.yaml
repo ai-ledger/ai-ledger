@@ -1,0 +1,32 @@
+id: "AILE-1772822938198"
+title: "Align docs and release workflow after 0.2.0"
+date: "2026-03-06"
+author: "your name or handle"
+
+intent:
+  summary: "One sentence: what is supposed to change."
+  reason: "Why this change is happening."
+  risk_level: "low" # low | medium | high
+
+scope:
+  expected:
+    - "src/**"
+  forbidden:
+    - "infra/**"
+    - "auth/**"
+    - "supabase/migrations/**"
+
+verification:
+  expected_tests:
+    - "pnpm test"
+    - "pnpm lint"
+  manual_checks:
+    - "Describe any manual checks expected"
+
+review:
+  requires_human_approval: true
+
+links:
+  entry: ".ai-ledger/entries/2026-03-06-slug.md"
+  pr: ""    # optional
+  issue: "" # optional
