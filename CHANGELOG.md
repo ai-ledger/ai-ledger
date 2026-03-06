@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), but kept intentionally lightweight.
 
+## [Unreleased]
+
+### Changed
+
+- Updated repository docs (`README.md`, `AGENTS.md`) to reflect that this repository now uses detached ledger storage (`ai-ledger/log`) instead of workspace contracts/entries on active branches.
+- Updated `.github/workflows/ai-ledger-basic.yml` to use `npx --yes @ai-ledger/cli@0.2.0 check` for non-interactive CI runs.
+- Hardened `.github/workflows/publish.yml` to skip publishing a package when the exact version already exists on npm, preventing tag workflow failures from duplicate publishes.
+- Bumped `@ai-ledger/spec` to `0.2.0` and synced `packages/spec/spec/v0.1.md` with `spec/v0.1.md`.
+
 ## [0.2.0] – 2026-03-06
 
 ### Added

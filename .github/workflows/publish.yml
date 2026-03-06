@@ -23,14 +23,34 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Publish spec
+      - name: Publish spec (if needed)
         working-directory: packages/spec
-        run: npm publish --access public
+        run: |
+          set -euo pipefail
+          PKG_NAME="$(node -p "require('./package.json').name")"
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+
+          if npm view "${PKG_NAME}@${PKG_VERSION}" version >/dev/null 2>&1; then
+            echo "${PKG_NAME}@${PKG_VERSION} already published; skipping."
+            exit 0
+          fi
+
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish cli
+      - name: Publish cli (if needed)
         working-directory: packages/cli
-        run: npm publish --access public
+        run: |
+          set -euo pipefail
+          PKG_NAME="$(node -p "require('./package.json').name")"
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+
+          if npm view "${PKG_NAME}@${PKG_VERSION}" version >/dev/null 2>&1; then
+            echo "${PKG_NAME}@${PKG_VERSION} already published; skipping."
+            exit 0
+          fi
+
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
