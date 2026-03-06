@@ -95,11 +95,11 @@ scope:
 ## Repository Structure
 
 ```text
-.ai-ledger/
-  contracts/
-  entries/
-  templates/
-  config.json
+.ai-ledger/             # This repo's own ledger records (workspace mode)
+  contracts/            # Contracts for changes to this repo
+  entries/              # Entries for changes to this repo
+  templates/            # Templates used by humans/agents
+  config.json           # Policy/config for this repo
 spec/
 packages/
   cli/          # @ai-ledger/cli
@@ -244,15 +244,47 @@ When prompting:
 
 ## CI Enforcement
 
-A basic GitHub Actions workflow is included at:
+### This repository
+
+This repo includes a basic GitHub Actions workflow at:
 
 - `.github/workflows/ai-ledger-basic.yml`
 
-It enforces:
-- Presence of new contract and entry files in a PR
-- Append-only rule for contracts and entries
+It enforces for **this** repository:
 
-Scope enforcement can be added later (often via a CLI).
+- Presence of at least one new contract and one new entry file in a PR
+- Append-only rule for `.ai-ledger/contracts/` and `.ai-ledger/entries/`
+
+This works because this repository keeps its own governance records directly under `.ai-ledger/` in workspace mode.
+
+### Consumer projects using the CLI
+
+The reference CLI (`@ai-ledger/cli`) supports an optional **detached storage** mode where:
+
+- Contracts and entries are written to a dedicated ledger branch (by default `ai-ledger/log`) via a git worktree under `.git/.ai-ledger/worktree`.
+- Your feature branches stay free of ledger-only commits.
+
+For those projects, the recommended CI pattern is to call the CLI’s `check` command instead of diffing `.ai-ledger/` directly, for example:
+
+```yaml
+name: AI Ledger (basic)
+
+on:
+  pull_request:
+
+jobs:
+  basic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: AI Ledger check
+        run: npx @ai-ledger/cli@0.2.0 check
+```
+
+The CLI’s `init` command can scaffold or update this workflow for you when you adopt 0.2.0.
 
 ---
 
@@ -275,9 +307,11 @@ npx @ai-ledger/cli new --title "..."
 npx @ai-ledger/cli check
 ```
 
-- `init` — scaffold `.ai-ledger/` (templates, config)
+- `init` — scaffold `.ai-ledger/` templates/config and select storage mode
 - `new --title "..."` — generate a new contract and entry
 - `check` — validate append-only and presence of contracts/entries (e.g. in CI)
+
+By default in git repositories, ledger records are stored on a dedicated branch (`ai-ledger/log`) through an internal git worktree (`.git/.ai-ledger/worktree`). This keeps `.ai-ledger/contracts` and `.ai-ledger/entries` off your active branch while preserving append-only history for AI Ledger itself. Outside git repositories, storage falls back to workspace mode.
 
 ---
 
