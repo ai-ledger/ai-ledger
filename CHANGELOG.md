@@ -55,6 +55,8 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 - **Pre-push hook for ledger branch**  
   - When using git-branch storage, `init` installs a `pre-push` hook that pushes the ledger branch (e.g. `ai-ledger/log`) to the same remote whenever you push any ref.  
   - Keeps the remote ledger in sync without requiring manual `git push origin ai-ledger/log`.  
+  - Uses recursion protection (`--no-verify` + guard) for the internal ledger push.  
+  - Installation is best-effort: if hooks cannot be updated (permissions/custom policy), `init` warns and continues.
   - If a custom `pre-push` hook already exists (without the AI Ledger marker), it is left unchanged.
 
 - **Documentation updates**  

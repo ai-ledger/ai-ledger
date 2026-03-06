@@ -1,0 +1,39 @@
+id: "AILE-0016"
+title: "Harden 0.2.0 release flow for remote ledger branch and repository CI"
+date: "2026-03-06"
+author: "codex"
+
+intent:
+  summary: "Fix release blockers by restoring repository PR governance checks and ensuring CLI worktree setup prefers existing remote ledger branches."
+  reason: "Current branch has two blockers before merge/release: repository CI references unpublished npm version and CLI may create a fresh local ledger branch instead of using existing origin ledger history in fresh clones."
+  risk_level: "medium"
+
+scope:
+  expected:
+    - "packages/cli/src/index.ts"
+    - ".github/workflows/ai-ledger-basic.yml"
+    - "README.md"
+    - "CHANGELOG.md"
+    - ".ai-ledger/contracts/**"
+    - ".ai-ledger/entries/**"
+  forbidden:
+    - "infra/**"
+    - "auth/**"
+    - "supabase/migrations/**"
+
+verification:
+  expected_tests:
+    - "pnpm --filter @ai-ledger/cli build"
+    - "node packages/cli/dist/index.js check"
+  manual_checks:
+    - "Confirm repository workflow enforces new contract+entry and append-only behavior using git diff against base branch."
+    - "Review ensureLedgerWorktree logic to verify it fetches/checks `origin/<branch>` and initializes local branch from remote when available."
+
+review:
+  requires_human_approval: false
+
+links:
+  entry: ".ai-ledger/entries/2026-03-06-release-hardening-remote-ledger-branch-and-repo-ci.md"
+  pr: ""
+  issue: ""
+

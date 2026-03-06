@@ -100,9 +100,9 @@ The `check` command:
 
 The CLI writes and commits to the ledger branch locally. When using git-branch storage, `init` installs a **pre-push hook** that pushes the ledger branch (e.g. `ai-ledger/log`) to the same remote whenever you push any ref.
 
-So when you run `git push origin main` or `git push origin your-feature-branch`, the hook also runs `git push origin ai-ledger/log`, keeping the remote ledger in sync.
+So when you run `git push origin main` or `git push origin your-feature-branch`, the hook also runs a secondary `git push --no-verify origin ai-ledger/log` (with recursion protection), keeping the remote ledger in sync without looping.
 
-If you have a custom `pre-push` hook already, the CLI will not overwrite it. You can then push the ledger branch manually:
+If you have a custom `pre-push` hook already, the CLI will not overwrite it. If the hook cannot be installed/updated (for example due to permissions), `init` warns and continues. In either case you can push the ledger branch manually:
 
 ```bash
 git push origin ai-ledger/log

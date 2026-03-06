@@ -57,6 +57,10 @@ function runGit(args: string[], cwd = ROOT): string {
   return execFileSync("git", args, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
 }
 
+function errorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : String(err);
+}
+
 function inGitRepo(): boolean {
   try {
     runGit(["rev-parse", "--is-inside-work-tree"]);
@@ -69,6 +73,24 @@ function inGitRepo(): boolean {
 function gitBranchExists(branch: string): boolean {
   try {
     runGit(["show-ref", "--verify", "--quiet", `refs/heads/${branch}`]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function gitRemoteExists(remote: string): boolean {
+  try {
+    runGit(["remote", "get-url", remote]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function gitRemoteBranchExists(branch: string, remote = "origin"): boolean {
+  try {
+    runGit(["show-ref", "--verify", "--quiet", `refs/remotes/${remote}/${branch}`]);
     return true;
   } catch {
     return false;
@@ -214,33 +236,58 @@ function ensurePrePushHook(config: LedgerConfig) {
     return;
   }
 
-  const gitDir = getGitDir();
-  const hooksDir = join(gitDir, "hooks");
-  const prePushPath = join(hooksDir, "pre-push");
+  try {
+    const gitDir = getGitDir();
+    const hooksDir = join(gitDir, "hooks");
+    const prePushPath = join(hooksDir, "pre-push");
 
-  if (existsSync(prePushPath)) {
-    const current = readFileSync(prePushPath, "utf8");
-    if (!current.includes(PRE_PUSH_HOOK_MARKER)) {
-      return;
+    if (existsSync(prePushPath)) {
+      const current = readFileSync(prePushPath, "utf8");
+      if (!current.includes(PRE_PUSH_HOOK_MARKER)) {
+        return;
+      }
     }
-  }
 
-  const branch = config.storage.branch;
-  const hookContent = `#!/bin/sh
+    const branch = config.storage.branch;
+    const hookContent = `#!/bin/sh
 ${PRE_PUSH_HOOK_MARKER} - do not edit manually
 remote="$1"
-url="$2"
 
-# Push the ledger branch when any ref is pushed
-if git rev-parse --verify "${branch}" >/dev/null 2>&1; then
-  git push "$remote" "${branch}" 2>/dev/null || echo "ai-ledger: warning - failed to push ${branch} to $remote"
+if [ -z "$remote" ]; then
+  exit 0
+fi
+
+# Prevent recursion if this hook re-enters.
+if [ "$AI_LEDGER_PRE_PUSH_ACTIVE" = "1" ]; then
+  exit 0
+fi
+export AI_LEDGER_PRE_PUSH_ACTIVE=1
+
+ledger_ref="refs/heads/${branch}"
+ledger_ref_in_push=0
+
+# stdin contains refs being pushed: <local ref> <local sha> <remote ref> <remote sha>
+while read -r local_ref local_sha remote_ref remote_sha
+do
+  if [ "$local_ref" = "$ledger_ref" ] || [ "$remote_ref" = "$ledger_ref" ]; then
+    ledger_ref_in_push=1
+    break
+  fi
+done
+
+# Push the ledger branch along with any normal push unless it's already included.
+if [ "$ledger_ref_in_push" -eq 0 ] && git rev-parse --verify "${branch}" >/dev/null 2>&1; then
+  git push --no-verify "$remote" "${branch}" >/dev/null 2>&1 || echo "ai-ledger: warning - failed to push ${branch} to $remote"
 fi
 exit 0
 `;
 
-  mkdirSync(hooksDir, { recursive: true });
-  writeFileSync(prePushPath, hookContent, "utf8");
-  chmodSync(prePushPath, 0o755);
+    mkdirSync(hooksDir, { recursive: true });
+    writeFileSync(prePushPath, hookContent, "utf8");
+    chmodSync(prePushPath, 0o755);
+  } catch (err) {
+    console.warn(`ai-ledger: warning - unable to install/update pre-push hook (${errorMessage(err)}).`);
+  }
 }
 
 function today(): string {
@@ -291,6 +338,19 @@ function ensureLedgerWorktree(branch: string): string {
   if (!existsSync(worktree)) {
     if (gitBranchExists(branch)) {
       runGit(["worktree", "add", "--force", worktree, branch]);
+    } else if (gitRemoteExists("origin")) {
+      if (!gitRemoteBranchExists(branch, "origin")) {
+        try {
+          runGit(["fetch", "origin", branch, "--depth=1"]);
+        } catch {
+          // Continue; we'll create a local branch if remote branch is unavailable.
+        }
+      }
+      if (gitRemoteBranchExists(branch, "origin")) {
+        runGit(["worktree", "add", "--force", "-b", branch, worktree, `origin/${branch}`]);
+      } else {
+        runGit(["worktree", "add", "--force", "-b", branch, worktree]);
+      }
     } else {
       runGit(["worktree", "add", "--force", "-b", branch, worktree]);
     }
