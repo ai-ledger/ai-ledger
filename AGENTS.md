@@ -8,19 +8,18 @@ Follow these rules for any meaningful change.
 
 1) Append-only
 
-Never edit or delete existing files in:
-- .ai-ledger/contracts/
-- .ai-ledger/entries/
+Never edit or delete existing ledger files on the detached ledger branch/worktree:
+- .git/.ai-ledger/worktree/.ai-ledger/contracts/
+- .git/.ai-ledger/worktree/.ai-ledger/entries/
 
 If corrections are needed, create an amendment as a new contract and a new entry.
 
 2) Before coding: create a contract
 
-- Copy .ai-ledger/templates/contract.yaml
-- Save to .ai-ledger/contracts/YYYY-MM-DD-<slug>.contract.yaml
-- Fill required fields
-- Declare scope.expected and scope.forbidden
-- If review.requires_human_approval is true, do not proceed without an explicit approval step
+- Run `npx @ai-ledger/cli@0.2.0 new --title "<short title>"` from the repo root.
+- This creates a contract and entry pair on `ai-ledger/log`.
+- Fill required contract fields (intent, scope, verification, links).
+- If `review.requires_human_approval` is true, do not proceed without an explicit approval step.
 
 3) Stay in scope
 
@@ -30,9 +29,11 @@ If corrections are needed, create an amendment as a new contract and a new entry
 
 4) After coding: create an entry
 
-- Copy .ai-ledger/templates/entry.md
-- Save to .ai-ledger/entries/YYYY-MM-DD-<slug>.md
-- Record actual changes, files changed, verification performed, and approval
+- Update the generated entry on the ledger worktree with:
+  - actual changes
+  - files changed
+  - verification performed
+  - approval status/details
 
 ## Behavior expectations
 

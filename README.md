@@ -95,11 +95,13 @@ scope:
 ## Repository Structure
 
 ```text
-.ai-ledger/             # This repo's own ledger records (workspace mode)
-  contracts/            # Contracts for changes to this repo
-  entries/              # Entries for changes to this repo
+.ai-ledger/
+  README.md             # Storage mode notes for this repository
   templates/            # Templates used by humans/agents
   config.json           # Policy/config for this repo
+# Canonical ledger records are on branch ai-ledger/log:
+#   .ai-ledger/contracts/
+#   .ai-ledger/entries/
 spec/
 packages/
   cli/          # @ai-ledger/cli
@@ -250,12 +252,11 @@ This repo includes a basic GitHub Actions workflow at:
 
 - `.github/workflows/ai-ledger-basic.yml`
 
-It enforces for **this** repository:
+This repository uses detached ledger storage (`ai-ledger/log`) and the workflow runs:
 
-- Presence of at least one new contract and one new entry file in a PR
-- Append-only rule for `.ai-ledger/contracts/` and `.ai-ledger/entries/`
+- `npx --yes @ai-ledger/cli@0.2.0 check`
 
-This works because this repository keeps its own governance records directly under `.ai-ledger/` in workspace mode.
+That check validates contracts/entries in the configured storage location (for this repo: the ledger branch/worktree), rather than assuming `.ai-ledger/contracts` and `.ai-ledger/entries` are present in the active branch.
 
 ### Consumer projects using the CLI
 
@@ -309,7 +310,7 @@ npx @ai-ledger/cli check
 
 - `init` — scaffold `.ai-ledger/` templates/config and select storage mode
 - `new --title "..."` — generate a new contract and entry
-- `check` — validate append-only and presence of contracts/entries (e.g. in CI)
+- `check` — validate contracts/entries exist and are non-empty in configured storage (e.g. in CI)
 
 By default in git repositories, ledger records are stored on a dedicated branch (`ai-ledger/log`) through an internal git worktree (`.git/.ai-ledger/worktree`). This keeps `.ai-ledger/contracts` and `.ai-ledger/entries` off your active branch while preserving append-only history for AI Ledger itself. Outside git repositories, storage falls back to workspace mode.
 
