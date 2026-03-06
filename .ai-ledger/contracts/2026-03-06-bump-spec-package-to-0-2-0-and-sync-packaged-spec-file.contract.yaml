@@ -1,16 +1,18 @@
 id: "AILE-1772823524709"
 title: "Bump spec package to 0.2.0 and sync packaged spec file"
 date: "2026-03-06"
-author: "your name or handle"
+author: "codex"
 
 intent:
-  summary: "One sentence: what is supposed to change."
-  reason: "Why this change is happening."
+  summary: "Publish @ai-ledger/spec as 0.2.0 and sync its bundled spec copy with the current root spec content."
+  reason: "The CLI is now 0.2.0 and the packaged spec currently lags root spec guidance; aligning package version/content avoids version confusion and stale published spec behavior."
   risk_level: "low" # low | medium | high
 
 scope:
   expected:
-    - "src/**"
+    - "packages/spec/package.json"
+    - "packages/spec/spec/v0.1.md"
+    - "CHANGELOG.md"
   forbidden:
     - "infra/**"
     - "auth/**"
@@ -18,15 +20,16 @@ scope:
 
 verification:
   expected_tests:
-    - "pnpm test"
-    - "pnpm lint"
+    - "pnpm --filter @ai-ledger/cli build"
+    - "node packages/cli/dist/index.js check"
   manual_checks:
-    - "Describe any manual checks expected"
+    - "Confirm packages/spec/spec/v0.1.md matches spec/v0.1.md."
+    - "Confirm @ai-ledger/spec package.json version is 0.2.0."
 
 review:
-  requires_human_approval: true
+  requires_human_approval: false
 
 links:
-  entry: ".ai-ledger/entries/2026-03-06-slug.md"
+  entry: ".ai-ledger/entries/2026-03-06-bump-spec-package-to-0-2-0-and-sync-packaged-spec-file.md"
   pr: ""    # optional
   issue: "" # optional
