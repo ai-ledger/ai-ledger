@@ -115,7 +115,25 @@ LICENSE
 
 ---
 
-## Quick Start (No Tooling Required)
+## Quick Start
+
+### Node project (recommended)
+
+From your repository root:
+
+```bash
+npx --yes @ai-ledger/cli@0.2.0 init
+npx --yes @ai-ledger/cli@0.2.0 new --title "Describe the change"
+npx --yes @ai-ledger/cli@0.2.0 check
+```
+
+What this does:
+
+- `init` sets up `.ai-ledger/` templates/config and configures storage (detached ledger branch in git repos).
+- `new` creates a contract+entry pair using your templates.
+- `check` validates contracts/entries in the configured storage for CI/manual checks.
+
+### Manual workflow (no CLI)
 
 1. Before starting meaningful work
    - Copy `.ai-ledger/templates/contract.yaml`
@@ -282,7 +300,7 @@ jobs:
           fetch-depth: 0
 
       - name: AI Ledger check
-        run: npx @ai-ledger/cli@0.2.0 check
+        run: npx --yes @ai-ledger/cli@0.2.0 check
 ```
 
 The CLI’s `init` command can scaffold or update this workflow for you when you adopt 0.2.0.
@@ -293,26 +311,24 @@ The CLI’s `init` command can scaffold or update this workflow for you when you
 
 See `spec/v0.1.md`.
 
-AI Ledger is a specification first.
-Tooling may evolve independently.
+The current normative specification document is `v0.1`.
+
+Package versions may advance independently of the spec document version:
+
+- `@ai-ledger/cli@0.2.0` includes tooling and workflow improvements.
+- `@ai-ledger/spec@0.2.0` is a packaged distribution that currently contains `spec/v0.1.md` as the normative spec content.
+
+AI Ledger is a specification first, and tooling/package versions may evolve independently.
 
 ---
 
 ## Reference CLI
 
-The `@ai-ledger/cli` package provides a Node.js reference implementation. Run with `npx` (no install):
+The `@ai-ledger/cli` package provides the Node.js reference implementation.
 
-```bash
-npx @ai-ledger/cli init
-npx @ai-ledger/cli new --title "..."
-npx @ai-ledger/cli check
-```
+For full command details, configuration, migration behavior, and CI guidance, see:
 
-- `init` — scaffold `.ai-ledger/` templates/config and select storage mode
-- `new --title "..."` — generate a new contract and entry
-- `check` — validate contracts/entries exist and are non-empty in configured storage (e.g. in CI)
-
-By default in git repositories, ledger records are stored on a dedicated branch (`ai-ledger/log`) through an internal git worktree (`.git/.ai-ledger/worktree`). This keeps `.ai-ledger/contracts` and `.ai-ledger/entries` off your active branch while preserving append-only history for AI Ledger itself. Outside git repositories, storage falls back to workspace mode.
+- `packages/cli/README.md`
 
 ---
 
