@@ -1,0 +1,34 @@
+id: "AILE-0013"
+title: "Document detached ledger storage, migration, and CI behavior for CLI 0.2.0"
+date: "2026-03-06"
+author: "codex"
+
+intent:
+  summary: "Update documentation to explain CLI 0.2.0 storage modes, migration from workspace to git-branch, CI workflow scaffolding, and how ledger branches are pushed and checked."
+  reason: "Users upgrading from 0.1.0 or adopting AI Ledger for new projects need clear docs on how detached storage works, how init affects their CI, and how to keep the ledger branch healthy in CI/CD."
+  risk_level: "low"
+
+scope:
+  expected:
+    - "README.md"
+    - "packages/cli/README.md"
+    - "spec/v0.1.md"
+  forbidden:
+    - "infra/**"
+    - "auth/**"
+    - "supabase/migrations/**"
+
+verification:
+  expected_tests:
+    - "pnpm --filter @ai-ledger/cli build"
+  manual_checks:
+    - "Visually inspect README.md, packages/cli/README.md, and spec/v0.1.md to confirm detached storage, migration, and CI behavior are described accurately and consistently with the CLI implementation."
+
+review:
+  requires_human_approval: false
+
+links:
+  entry: ".ai-ledger/entries/2026-03-06-docs-detached-storage-and-ci.md"
+  pr: ""
+  issue: ""
+

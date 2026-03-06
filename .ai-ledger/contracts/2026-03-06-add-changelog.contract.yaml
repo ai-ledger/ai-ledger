@@ -1,0 +1,32 @@
+id: "AILE-0014"
+title: "Add project CHANGELOG for CLI 0.2.0 and earlier"
+date: "2026-03-06"
+author: "codex"
+
+intent:
+  summary: "Introduce a human-readable CHANGELOG.md that summarizes notable changes, starting with CLI 0.2.0."
+  reason: "Consumers of the CLI and spec should be able to see at a glance what changed between releases without reading individual contracts and entries."
+  risk_level: "low"
+
+scope:
+  expected:
+    - "CHANGELOG.md"
+  forbidden:
+    - "infra/**"
+    - "auth/**"
+    - "supabase/migrations/**"
+
+verification:
+  expected_tests:
+    - "pnpm --filter @ai-ledger/cli build"
+  manual_checks:
+    - "Visually inspect CHANGELOG.md to confirm it accurately reflects the 0.2.0 changes and initial 0.1.0 release."
+
+review:
+  requires_human_approval: false
+
+links:
+  entry: ".ai-ledger/entries/2026-03-06-add-changelog.md"
+  pr: ""
+  issue: ""
+
