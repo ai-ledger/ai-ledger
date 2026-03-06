@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, rmSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 
@@ -31,6 +31,7 @@ const CONTRACTS = join(BASE, "contracts");
 const ENTRIES = join(BASE, "entries");
 const TEMPLATES = join(BASE, "templates");
 const CONFIG = join(BASE, "config.json");
+const README = join(BASE, "README.md");
 const AGENTS_FILE = join(ROOT, "AGENTS.md");
 const DEFAULT_STORAGE_BRANCH = "ai-ledger/log";
 
@@ -111,6 +112,61 @@ function ensureWorkspaceDirs() {
 function ensureBaseDirs() {
   mkdirSync(BASE, { recursive: true });
   mkdirSync(TEMPLATES, { recursive: true });
+}
+
+function ensureLedgerReadme(config: LedgerConfig) {
+  const lines: string[] = [];
+
+  lines.push("# AI Ledger");
+  lines.push("");
+  lines.push("This project uses AI Ledger to manage intent contracts and change entries for AI-assisted work.");
+  lines.push("");
+  lines.push("## Where are the contracts and entries?");
+  lines.push("");
+
+  if (config.storage.mode === "git-branch") {
+    lines.push("- **Storage mode**: git-branch");
+    lines.push(`- **Ledger branch**: \`${config.storage.branch}\``);
+    lines.push("");
+    lines.push(
+      "The canonical `.ai-ledger/contracts/` and `.ai-ledger/entries/` live on the dedicated ledger branch, not on your feature branches."
+    );
+    lines.push(
+      "Locally, the CLI manages a git worktree rooted under the main repo's `.git` directory for this branch."
+    );
+    lines.push("");
+    lines.push("To inspect the ledger records:");
+    lines.push("");
+    lines.push("1. Run `git worktree list` to find the AI Ledger worktree, or");
+    lines.push(`2. Run \`git checkout ${config.storage.branch}\` to view the branch directly.`);
+    lines.push("");
+  } else {
+    lines.push("- **Storage mode**: workspace");
+    lines.push("");
+    lines.push("Contracts and entries are stored directly in this working copy under:");
+    lines.push("- `.ai-ledger/contracts/`");
+    lines.push("- `.ai-ledger/entries/`");
+    lines.push("");
+  }
+
+  lines.push("## Templates and configuration");
+  lines.push("");
+  lines.push("The following files always live in this working copy:");
+  lines.push("- `.ai-ledger/templates/contract.yaml`");
+  lines.push("- `.ai-ledger/templates/entry.md`");
+  lines.push("- `.ai-ledger/config.json`");
+  lines.push("");
+  lines.push("You can edit these to customize how AI Ledger behaves in this repository.");
+  lines.push("");
+
+  const current = existsSync(README) ? readFileSync(README, "utf8") : null;
+  const next = lines.join("\n") + "\n";
+
+  if (current === next) {
+    return;
+  }
+
+  writeFileSync(README, next, "utf8");
 }
 
 function today(): string {
@@ -195,6 +251,7 @@ function migrateWorkspaceLedgerToBranch(branch: string): MigrationResult {
   let copiedContracts = 0;
   let copiedEntries = 0;
   const conflicts: string[] = [];
+  const migratedSources: string[] = [];
 
   const copyIfNeeded = (kind: "contracts" | "entries", fileName: string) => {
     const source = join(kind === "contracts" ? CONTRACTS : ENTRIES, fileName);
@@ -206,6 +263,9 @@ function migrateWorkspaceLedgerToBranch(branch: string): MigrationResult {
       if (sourceContent !== targetContent) {
         conflicts.push(`.ai-ledger/${kind}/${fileName}`);
       }
+      if (sourceContent === targetContent) {
+        migratedSources.push(source);
+      }
       return;
     }
 
@@ -215,6 +275,7 @@ function migrateWorkspaceLedgerToBranch(branch: string): MigrationResult {
     } else {
       copiedEntries += 1;
     }
+    migratedSources.push(source);
   };
 
   for (const fileName of workspaceContracts) {
@@ -233,6 +294,22 @@ function migrateWorkspaceLedgerToBranch(branch: string): MigrationResult {
       "-m",
       `ai-ledger: migrate existing workspace records (${copiedContracts} contracts, ${copiedEntries} entries)`
     ]);
+  }
+
+  for (const source of migratedSources) {
+    if (existsSync(source)) {
+      rmSync(source);
+    }
+  }
+
+  const remainingWorkspaceContracts = listVisibleFiles(CONTRACTS);
+  const remainingWorkspaceEntries = listVisibleFiles(ENTRIES);
+
+  if (remainingWorkspaceContracts.length === 0 && existsSync(CONTRACTS)) {
+    rmSync(CONTRACTS, { recursive: true });
+  }
+  if (remainingWorkspaceEntries.length === 0 && existsSync(ENTRIES)) {
+    rmSync(ENTRIES, { recursive: true });
   }
 
   return { copiedContracts, copiedEntries, conflicts };
@@ -366,6 +443,7 @@ What changed in reality.
     }
 
     const config = readConfig();
+    ensureLedgerReadme(config);
     if (config.storage.mode === "workspace") {
       ensureWorkspaceDirs();
       console.log(`Initialized .ai-ledger (storage: ${config.storage.mode})`);

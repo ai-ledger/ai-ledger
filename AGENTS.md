@@ -39,3 +39,17 @@ If corrections are needed, create an amendment as a new contract and a new entry
 - Prefer small, scoped changes
 - Avoid broad refactors unless explicitly requested and contracted
 - If you discover unrelated improvements, propose them as a separate contract and entry
+
+## AI Ledger Required Setup (managed by ai-ledger init)
+
+Every AI tool should be configured to:
+
+1. Create a contract before meaningful changes
+2. Stay within declared scope
+3. Create an entry after changes
+4. Never edit existing files in `.ai-ledger/contracts/` or `.ai-ledger/entries/` (append-only)
+
+Tell your agent:
+
+- Read `AGENTS.md` first
+- Follow the non-negotiables
