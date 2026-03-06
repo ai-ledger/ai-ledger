@@ -5,7 +5,7 @@ author: "codex"
 
 intent:
   summary: "Prevent recursive git pushes and hanging behavior in the CLI-managed pre-push hook."
-  reason: "The hook currently invokes `git push` from inside pre-push, which can recursively invoke itself and hang user pushes."
+  reason: "The hook invokes git push from inside pre-push, which can recursively invoke itself and hang user pushes."
   risk_level: "medium"
 
 scope:
@@ -23,8 +23,10 @@ scope:
 verification:
   expected_tests:
     - "pnpm --filter @ai-ledger/cli build"
+    - "node packages/cli/dist/index.js init"
   manual_checks:
-    - "Inspect generated pre-push hook content and confirm it uses recursion protection (`--no-verify` and a guard env var)."
+    - "Confirm init no longer fails when pre-push hook cannot be written; it should warn and continue."
+    - "Inspect generated pre-push hook content and confirm recursion protection (`--no-verify` + guard)."
 
 review:
   requires_human_approval: false
@@ -33,4 +35,3 @@ links:
   entry: ".ai-ledger/entries/2026-03-06-fix-pre-push-hook-recursion.md"
   pr: ""
   issue: ""
-

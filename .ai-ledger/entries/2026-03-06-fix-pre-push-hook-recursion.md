@@ -13,8 +13,8 @@ Prevent user push hangs caused by recursive invocation of the CLI-managed pre-pu
   - Adds recursion guard via `AI_LEDGER_PRE_PUSH_ACTIVE`.
   - Uses `git push --no-verify` for the internal ledger push.
   - Skips secondary push when the ledger ref is already part of the current push.
-  - Preserves existing behavior of not overwriting custom hooks without AI Ledger marker.
-- Updated docs to clarify the hook behavior and recursion protection in `packages/cli/README.md` and `CHANGELOG.md`.
+- Made hook installation best-effort (warn-only) so `init` continues even if `.git/hooks` is not writable.
+- Updated docs to clarify hook behavior and failure fallback in `packages/cli/README.md` and `CHANGELOG.md`.
 
 ## Files changed
 - packages/cli/src/index.ts
@@ -30,11 +30,12 @@ Prevent user push hangs caused by recursive invocation of the CLI-managed pre-pu
 ## Verification performed
 - tests run:
   - pnpm --filter @ai-ledger/cli build
+  - node packages/cli/dist/index.js init
 - manual checks:
-  - Reviewed generated pre-push hook template to confirm recursion guard, `--no-verify`, and ledger-ref skip logic are present.
+  - Confirmed `init` warns and exits successfully when hook file cannot be written in the sandbox.
+  - Reviewed generated hook template for recursion guard and `--no-verify`.
 
 ## Approval
 - required: false
 - approved_by: ""
 - approved_at: ""
-
