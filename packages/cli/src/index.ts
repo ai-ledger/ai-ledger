@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, rmSync, chmodSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 
@@ -33,6 +33,8 @@ const TEMPLATES = join(BASE, "templates");
 const CONFIG = join(BASE, "config.json");
 const README = join(BASE, "README.md");
 const AGENTS_FILE = join(ROOT, "AGENTS.md");
+const WORKFLOWS_DIR = join(ROOT, ".github", "workflows");
+const BASIC_WORKFLOW = join(WORKFLOWS_DIR, "ai-ledger-basic.yml");
 const DEFAULT_STORAGE_BRANCH = "ai-ledger/log";
 
 const AGENTS_MANAGED_HEADER = "## AI Ledger Required Setup (managed by ai-ledger init)";
@@ -167,6 +169,78 @@ function ensureLedgerReadme(config: LedgerConfig) {
   }
 
   writeFileSync(README, next, "utf8");
+}
+
+function ensureCiWorkflow(config: LedgerConfig) {
+  const next = `name: AI Ledger (basic)
+
+on:
+  pull_request:
+
+jobs:
+  basic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: AI Ledger check
+        run: npx @ai-ledger/cli@0.2.0 check
+`;
+
+  if (!existsSync(BASIC_WORKFLOW)) {
+    mkdirSync(WORKFLOWS_DIR, { recursive: true });
+    writeFileSync(BASIC_WORKFLOW, next, "utf8");
+    return;
+  }
+
+  const current = readFileSync(BASIC_WORKFLOW, "utf8");
+  const looksLikeOldBasic =
+    current.includes("AI Ledger (basic)") &&
+    current.includes("AI Ledger: missing new contract and/or entry.");
+
+  if (!looksLikeOldBasic || current === next) {
+    return;
+  }
+
+  writeFileSync(BASIC_WORKFLOW, next, "utf8");
+}
+
+const PRE_PUSH_HOOK_MARKER = "# Managed by @ai-ledger/cli";
+
+function ensurePrePushHook(config: LedgerConfig) {
+  if (config.storage.mode !== "git-branch") {
+    return;
+  }
+
+  const gitDir = getGitDir();
+  const hooksDir = join(gitDir, "hooks");
+  const prePushPath = join(hooksDir, "pre-push");
+
+  if (existsSync(prePushPath)) {
+    const current = readFileSync(prePushPath, "utf8");
+    if (!current.includes(PRE_PUSH_HOOK_MARKER)) {
+      return;
+    }
+  }
+
+  const branch = config.storage.branch;
+  const hookContent = `#!/bin/sh
+${PRE_PUSH_HOOK_MARKER} - do not edit manually
+remote="$1"
+url="$2"
+
+# Push the ledger branch when any ref is pushed
+if git rev-parse --verify "${branch}" >/dev/null 2>&1; then
+  git push "$remote" "${branch}" 2>/dev/null || echo "ai-ledger: warning - failed to push ${branch} to $remote"
+fi
+exit 0
+`;
+
+  mkdirSync(hooksDir, { recursive: true });
+  writeFileSync(prePushPath, hookContent, "utf8");
+  chmodSync(prePushPath, 0o755);
 }
 
 function today(): string {
@@ -444,6 +518,8 @@ What changed in reality.
 
     const config = readConfig();
     ensureLedgerReadme(config);
+    ensureCiWorkflow(config);
+    ensurePrePushHook(config);
     if (config.storage.mode === "workspace") {
       ensureWorkspaceDirs();
       console.log(`Initialized .ai-ledger (storage: ${config.storage.mode})`);
