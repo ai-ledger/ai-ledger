@@ -45,7 +45,7 @@ Every AI tool should be configured to:
 1. Create a contract before meaningful changes
 2. Stay within declared scope
 3. Create an entry after changes
-4. Never edit existing files in \`.ai-ledger/contracts/\` or \`.ai-ledger/entries/\` (append-only)
+4. Never edit existing contracts or entries (append-only)
 
 Tell your agent:
 
